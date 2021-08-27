@@ -1,6 +1,7 @@
+require('dotenv').config();
 const express = require ('express');
 const cors = require('cors')
-require('dotenv').config();
+const rutasUsuarios  = require('./routes/usuarios.routes')
 
 // Crea el servidor de node
 const servidorExpress  = express();
@@ -10,6 +11,8 @@ const servidorExpress  = express();
         servidorExpress.use(cors())
 //#endregion
 
+// Lectura y parseo del body
+        servidorExpress.use( express.json() );
 
 //#region  CONEXION BBDD 
     const  dbConnection  = require('./database/config')
@@ -26,14 +29,7 @@ const servidorExpress  = express();
 //#endregion
 
 //#region Rutas
-    servidorExpress.route('/')
-                    .get((req,res,next)=>{
-                        res.json({
-                            ok:true,
-                            msg:'Hola mundo'
-                        })
-                    })
-                    .post()
+    servidorExpress.use('/api/usuarios',rutasUsuarios);
 //#endregion
 
 
