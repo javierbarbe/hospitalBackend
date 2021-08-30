@@ -1,9 +1,8 @@
 
 // esto son modelos de mongoose 
-
 const { Schema, model} = require('mongoose');
 
- const usuarioSchema = Schema({
+ const usuarioSchema =new Schema({
     nombre:{
         type:String,
         require:true
@@ -28,10 +27,20 @@ const { Schema, model} = require('mongoose');
     },
     google:{
         type:Boolean,
-        default:true
+        default:false
     }
  });
+usuarioSchema.method('toJSON', function(){
+    const {__v,_id, ...object}=this.toObject();
 
- module.exports = model('Usuario', usuarioSchema);
+    object.uid = _id;
+    return object;
+})
+
+const user = model('Usuario',usuarioSchema);
+
+
+
+ module.exports = user;
 
 
