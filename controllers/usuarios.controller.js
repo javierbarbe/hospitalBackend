@@ -3,15 +3,38 @@ const { request, response } = require('express');
 const Usuario = require ('../models/usuario');
 const bcrypt = require('bcryptjs');
 const { generarJWT } = require('../helpers/jwt');
-const getUsuarios = async (req,res,next)=>{
-    const usuarios = await  Usuario.find();
-    res.json({
-        ok:true,
-        usuarios,
-        // al haber añadido en la funcion middleware ( intermedia ) la propiedad uid a la request,
-        // puedo devolverla en la siguiente funcion , es como si el coddigo estuviese a continuacion uno del otro
-        uid:req.uid
-    });
+const getUsuarios = async (req = request,res,next)=>{
+  try{  
+      // Recogo de la query los parametros (desde y hasta o límite )
+        const parametroDesde = Number(req.query.desde) || 0;
+        const limite = Number ( req.query.limite) || 5;
+
+        // const usuarios = await  Usuario.find({},`nombre role google email`)
+        //                                 // paginacion
+        //                                 .skip(parametroDesde)
+        //                                 .limit(limite);
+        // const total = await Usuario.count();
+        const [ usuarios, total ]= await  Promise.all([
+                                            Usuario.find({},`nombre role google email`).skip(parametroDesde).limit(limite),
+                                            Usuario.count()
+                                            ]
+                                            );
+
+        res.json({
+            ok:true,
+            usuarios,
+            total,
+            // al haber añadido en la funcion middleware ( intermedia ) la propiedad uid a la request,
+            // puedo devolverla en la siguiente funcion , es como si el coddigo estuviese a continuacion uno del otro
+            uid:req.uid
+        });
+    }catch(error){
+        console.log(error);
+        res.status(500).json({
+            ok:false,
+            msg:'Error al coger usuarios'
+        })
+    }
 }
 
 const  crearUsuario = async  (req=request,res= response,next)=>{

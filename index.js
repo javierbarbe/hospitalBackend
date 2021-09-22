@@ -1,8 +1,12 @@
 require('dotenv').config();
 const express = require ('express');
 const cors = require('cors')
-const rutasUsuarios  = require('./routes/usuarios.routes')
-const rutasLogin     = require('./routes/auth.routes')
+const rutasUsuarios  = require('./routes/usuarios.routes');
+const rutasHospitales  = require('./routes/hospitales.routes');
+const rutasMedicos  = require('./routes/medicos.routes');
+const rutasLogin     = require('./routes/auth.routes');
+const rutasBusqueda     = require('./routes/busqeda.routes');
+const rutasUpload      = require('./routes/uploads.routes');
 // Crea el servidor de node
 const servidorExpress  = express();
 
@@ -30,7 +34,12 @@ const servidorExpress  = express();
 
 //#region Rutas
     servidorExpress.use('/api/usuarios',rutasUsuarios);
+    servidorExpress.use('/api/hospitales',rutasHospitales);
+    servidorExpress.use('/api/medicos',rutasMedicos);
     servidorExpress.use('/api/login',rutasLogin);
+    servidorExpress.use('/api/todo',rutasBusqueda);
+    servidorExpress.use('/api/upload',rutasUpload);
+    
 //#endregion
 
 
