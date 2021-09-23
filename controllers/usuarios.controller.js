@@ -15,8 +15,8 @@ const getUsuarios = async (req = request,res,next)=>{
         //                                 .limit(limite);
         // const total = await Usuario.count();
         const [ usuarios, total ]= await  Promise.all([
-                                            Usuario.find({},`nombre role google email`).skip(parametroDesde).limit(limite),
-                                            Usuario.count()
+                                            Usuario.find({},`nombre role google email img`).skip(parametroDesde).limit(limite),
+                                            Usuario.countDocuments()
                                             ]
                                             );
 
