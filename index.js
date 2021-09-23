@@ -23,7 +23,8 @@ const servidorExpress  = express();
     // Base de datos
     dbConnection.dbConnection();
 //#endregion
-
+// DIRECTORIO PUBLICO
+ servidorExpress.use(express.static('public'));
 
 // lista de variables de entorno   console.log(process.env);
 
