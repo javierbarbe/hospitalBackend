@@ -27,8 +27,10 @@ router.route('/')
 
 router.route('/:id')
                 .put(
-                            [
-                               
+                            [  
+                                validarJWT,
+                                check('nombre','El nombre del Hospital es necesario').notEmpty(),
+                                validarCampos
                             ],
                             editaHospital
                     )

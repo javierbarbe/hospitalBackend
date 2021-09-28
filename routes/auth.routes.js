@@ -2,9 +2,9 @@
 /*
     Ruta: api/login
 */
-
+const { validarJWT } = require ('../middlewares/validar-jwt');
 const { Router } = require('express');
-const { login, loginGoogle } = require('../controllers/auth.controller');
+const { login, loginGoogle, renewToken } = require('../controllers/auth.controller');
 const { check } = require('express-validator');
 const { validarCampos } = require('../middlewares/validar-campos');
 
@@ -21,6 +21,8 @@ router.post('/google',[
                 check('token', 'El token de google es obligatorio').notEmpty(),
                 validarCampos
             ],
-            loginGoogle)
+            loginGoogle);
+            // validamos que ya haya token... no tiene sentido renovar algo que no tengo 
+router.get('/renew',validarJWT, renewToken);
 
 module.exports = router;

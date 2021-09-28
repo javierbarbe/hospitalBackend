@@ -16,9 +16,7 @@ const login = async ( req=request, res=response, next )=> {
             });
         }
 
-        console.log(usuarioDB.password);
         // Verificacion contraseña
-
         const validPassword = bcrypt.compareSync( password, usuarioDB.password);
         if(!validPassword){
             return res.status(400).json({
@@ -27,7 +25,7 @@ const login = async ( req=request, res=response, next )=> {
             });
         }
         // TODO GENERAR TOKEN JWT
-        const token =await generarJWT(usuarioDB._id)
+        const token = await generarJWT(usuarioDB._id)
         res.json({
             ok:true,
             token
@@ -68,7 +66,7 @@ const loginGoogle = async (req=request,res=response) => {
        }
        // guardar en DB 
        await (usuario.save());
-       const token =await generarJWT(usuario._id)
+       const token =await generarJWT(usuario._id);
         res.status(200).json({
             ok:true,
             msg:'verificando token goole',
@@ -80,12 +78,22 @@ const loginGoogle = async (req=request,res=response) => {
             ok:false,
             msg:'Token no es correcto'
         });
-        console.log('han habido errores',error);
+        console.log('han habido errores al loguear con google',error);
     }
         
     }
-
+const renewToken =async (req,res=response) => {
+    // con el middleware validarJWT añadimos a la req el uid del usuario
+    const uid = req.uid;
+    const token = await generarJWT(uid);
+    res.json({
+        ok:true,
+        msg:'Renovando token',
+        token
+    })
+}
 module.exports = {
     login,
-    loginGoogle
+    loginGoogle,
+    renewToken
 }

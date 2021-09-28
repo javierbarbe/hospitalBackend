@@ -1,15 +1,15 @@
 const mongoose = require('mongoose');
 const linkBBDD = process.env.DB_CNN;
-const dbConnection =  () => {
+const dbConnection =async () => {
     try {
-        mongoose.connect(linkBBDD, 
+     await mongoose.connect(linkBBDD, 
                         {
                             useNewUrlParser: true, 
                             useUnifiedTopology: true,
                          });
         console.log('base de datos online');
     } catch (error) {
-        console.log(error);
+        console.log('====================================\n==========================\n',error);
         throw new Error('error a la hora de iniciar la bbdd',error);
     }
 

@@ -57,66 +57,51 @@ const  crearMedico = async  (req=request,res= response,next)=>{
 }
 
 const editaMedico = async (req=request,res=response)=>{
-    const idMedico  = req.params.id;
-    console.log(idMedico);
-    res.json({
-        ok:true,
-        msg:'Editando Medico'
-    })
-    // try {
-    //     const { password, google, email, ...campos } = req.body ;
-    //     const usuarioBBDD = await Medico.findById(idUsuario);
-    //     // si el usuario no existe
-    //     if(!usuarioBBDD){
-    //        return res.status(400).json({
-    //             ok:false,
-    //             msg:'El usuario con id'+ idUsuario+' no existe'
-    //         })
-    //     }
-    //     // si los mails son distintos, compruebo que no haya nadie en la bbdd con ese email
-    //     if(usuarioBBDD.email != email){
-    //         const existeMail= await Medico.findOne({email});
-    //         // si ya hay un usuario con ese email, error
-    //         if(existeMail){
-    //             return res.status(400).json({
-    //                 ok:false,
-    //                 msg: 'Ya existe un usuario con ese email'
-    //             })
-    //         }
-    //     }
-    //     // añado a los campos el mail    
-    //     campos.email= email;
-    //     const usuarioActualizado= await Medico.findByIdAndUpdate(idUsuario, campos,{new:true});
-    //     // esta opcion de new true, devuelve ya el nuevo objeto modificado
-    //     res.status(200).json({
-    //         ok:true,
-    //         usuario:usuarioActualizado
-    //     })
+    try {
+        const idMedico  = req.params.id;
+        const uid       = req.uid;
+        const medico    = await Medico.findById(idMedico);
+        if(!medico){
+            return res.status(404).json({
+                ok:false,
+                msg:'No existe un médico con id: '+idMedico
+            });
+        }
+        const cambiosMedico = {
+            ...req.body,
+            usuario : uid
+        }
+        const medicoPostActualizado = await Medico.findByIdAndUpdate(idMedico, cambiosMedico, {new:true});
+
+        return  res.status(200).json({
+            ok:true,
+            msg:'Editado Medico',
+            medico:medicoPostActualizado
+        })
         
-        
-    // } catch (error) {
-    //     console.log(error);
-    //   return  res.status(500).json({
-    //         ok:false,
-    //         error: `error al actualizar el usuario `
-    //     })
-    // }
+    } catch (error) {
+        console.log(error);
+          return  res.status(500).json({
+                ok:false,
+                error: `error al actualizar el médico `
+            })
+    }
+  
 }
 
 const deleteMedico = async (req=request, res = response)=> {
     try {
-        return  res.status(200).json({
-            ok:true,
-            msg:'Eliminando Medico'
-        })
+       
         const idMedico = req.params.id;
+        const uid      = req.params.uid;
         const MedicoEliminar = await Medico.findByIdAndDelete(idMedico);
         if(MedicoEliminar){
             console.log('el Medico a eliminar ',MedicoEliminar);
             return  res.status(200).json({
                 ok:true,
-                usuarioElimnar: MedicoEliminar,
-                msg:'Eliminado correctamente '+ MedicoEliminar.nombre
+                usuario: uid,
+                msg:'Eliminado correctamente '+ MedicoEliminar.nombre,
+                medicoEliminado: MedicoEliminar
             })
         }
         return res.status(400).json({
