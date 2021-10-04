@@ -45,7 +45,7 @@ const  crearUsuario = async  (req=request,res= response,next)=>{
             if (existeEmail){
                 return res.status(400).json({
                     ok:false,
-                    msg:'el correo ya existe'
+                    msg:'El correo ya existe'
                 })
             }
             
@@ -82,6 +82,12 @@ const editaUsuario = async (req=request,res=response)=>{
     console.log(idUsuario);
     try {
         const { password, google, email, ...campos } = req.body ;
+        if (!campos.role) {
+          return res.status(401).json({
+            ok: false,
+            msg: "No hay rol de usuario",
+          });
+        }
         const usuarioBBDD = await Usuario.findById(idUsuario);
         // si el usuario no existe
         if(!usuarioBBDD){
@@ -90,8 +96,10 @@ const editaUsuario = async (req=request,res=response)=>{
                 msg:'El usuario con id'+ idUsuario+' no existe'
             })
         }
+      
         // si los mails son distintos, compruebo que no haya nadie en la bbdd con ese email
         if(usuarioBBDD.email != email){
+
             const existeMail= await Usuario.findOne({email});
             // si ya hay un usuario con ese email, error
             if(existeMail){
@@ -101,11 +109,21 @@ const editaUsuario = async (req=request,res=response)=>{
                 })
             }
         }
-        // añado a los campos el mail    
-        campos.email= email;
+          // si el email es de google no permito el cambio de email
+          if(!usuarioBBDD.google){
+              // añado a los campos el mail    
+              campos.email= email;
+          }else if(usuarioBBDD.email !== email){
+            return  res.status(400).json({
+                ok:false,
+                msg: `Los usuarios de google no pueden cambiar su email `
+            })
+          }
+        
         const usuarioActualizado= await Usuario.findByIdAndUpdate(idUsuario, campos,{new:true});
+        console.log(usuarioActualizado)
         // esta opcion de new true, devuelve ya el nuevo objeto modificado
-        res.status(200).json({
+        return  res.status(200).json({
             ok:true,
             usuario:usuarioActualizado
         })
@@ -115,7 +133,7 @@ const editaUsuario = async (req=request,res=response)=>{
         console.log(error);
       return  res.status(500).json({
             ok:false,
-            error: `error al actualizar el usuario `
+            msg: `error al actualizar el usuario `
         })
     }
 }

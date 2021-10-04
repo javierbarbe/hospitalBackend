@@ -21,7 +21,9 @@ const servidorExpress  = express();
 //#region  CONEXION BBDD 
     const  dbConnection  = require('./database/config');
     // Base de datos
-    dbConnection.dbConnection();
+    dbConnection.dbConnection().catch(err=> {
+        console.log('error al conectar en archivo index.js',err);
+    });
 //#endregion
 // DIRECTORIO PUBLICO
  servidorExpress.use(express.static('public'));

@@ -17,7 +17,6 @@ router.route('/')
             // utilizamos la libreria express-validator (npm i express-validator)
       router.post('/',
             [
-               validarJWT,
                check('email','El formato del mail no es válido').isEmail(),
                check('nombre','El nombre es requerido').notEmpty(),
                check('password','La password es requerida').notEmpty(),
@@ -30,7 +29,8 @@ router.route('/:id')
                             [
                                 check('email','El formato del mail no es válido').isEmail(),
                                 check('nombre','El nombre es requerido').notEmpty(),
-                                validarCampos
+                                validarCampos,
+                                validarJWT
                             ],
                             editaUsuario
                     )

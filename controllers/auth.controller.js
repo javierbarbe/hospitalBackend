@@ -43,36 +43,43 @@ const login = async ( req=request, res=response, next )=> {
 const loginGoogle = async (req=request,res=response) => {
     try {
         const tokenGoogle = req.body.token;
-        const {name,email, picture}=await  googleVerify(tokenGoogle);
+        const {name,email, picture} = await  googleVerify(tokenGoogle);
         console.log('====================================',{name,email,picture});
         const regex            = new RegExp(email, 'i');
-       const usuarioDB = await Usuario.findOne({email});
-       console.log('el usuarioDb es ',usuarioDB);
-       console.log('********************************');
-       let usuario;
-       if(!usuarioDB){
-           // no existe, me lo registro
-            usuario = new Usuario({
-                email:email,
-                nombre:name,
-                img:picture,
-                password:"@@@",
-                google:true
+        const usuarioDB = await Usuario.findOne({email});
+        console.log('el usuarioDb es ',usuarioDB);
+        console.log('********************************');
+        let usuario;
+        debugger;
+        if(usuarioDB == null){
+            // no existe, me lo registro
+                usuario = new Usuario({
+                    email:email,
+                    nombre:name,
+                    img:picture,
+                    password:"111",
+                    google:true
+                });
+                console.log('el usuario era null, ahroa es ',usuario);
+        }else{
+            //existe usuario
+            usuario = usuarioDB;
+            usuario.google=true;
+        }
+         // Encriptacion contraseña
+         const salt = bcrypt.genSaltSync();
+         usuario.password = "111";
+         usuario.password = bcrypt.hashSync(usuario.password, salt);
+        // guardar en DB 
+        await (usuario.save());
+        const token =await generarJWT(usuario._id);
+        console.log('el token en backend al hacer log', token);
+            res.status(200).json({
+                ok:true,
+                msg:'verificado token goole',
+                token,
+                usuario
             });
-       }else{
-           //existe usuario
-           usuario = usuarioDB;
-           usuario.google=true;
-       }
-       // guardar en DB 
-       await (usuario.save());
-       const token =await generarJWT(usuario._id);
-        res.status(200).json({
-            ok:true,
-            msg:'verificando token goole',
-            token,
-            usuario
-        });
     } catch (error) {
         res.status(400).json({
             ok:false,
@@ -86,10 +93,23 @@ const renewToken =async (req,res=response) => {
     // con el middleware validarJWT añadimos a la req el uid del usuario
     const uid = req.uid;
     const token = await generarJWT(uid);
+    const usuario = await Usuario.findById(uid);
+    // const {_doc} = usuario;
+    // const {password, ...final}= _doc;
     res.json({
         ok:true,
         msg:'Renovando token',
-        token
+        token,
+        usuario
+        // final,
+        // usuario :{
+        //     _id: usuario._id,
+        //     nombre: usuario.nombre,
+        //     email: usuario.email,
+        //     role:usuario.role,
+        //     google:usuario.google,
+        //     img : usuario.img,
+        // }
     })
 }
 module.exports = {

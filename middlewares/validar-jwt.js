@@ -11,7 +11,7 @@ const validarJWT = (req = request, res = response, next) => {
       });
     }
     const { uid, ...resto } = jwt.verify(token, process.env.JWT_SECURE);
-    console.log(resto);
+    console.log('el resto',resto);
     req.uid = uid;
     next();// hace que se llame a la siguiente función (se encadena)
   } catch (error) {
