@@ -15,7 +15,7 @@ const servidorExpress  = express();
         servidorExpress.use( cors() )
 //#endregion
 
-// Lectura y parseo del body
+// Lectura y parseo del body errkerkekejejeejejej
         servidorExpress.use( express.json() );
 
 //#region  CONEXION BBDD 

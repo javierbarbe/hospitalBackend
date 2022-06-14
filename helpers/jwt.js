@@ -3,7 +3,7 @@ const  jsonWebToken  = require ('jsonwebtoken')
 
 const generarJWT = (uid) => {
     return new Promise(
-    (resolve,reject)=>{
+      (resolve,reject)=>{
         const payload = { uid };
         jsonWebToken.sign(payload, process.env.JWT_SECURE,{ expiresIn:'12h' },
                         (err, token)=> {
@@ -15,7 +15,7 @@ const generarJWT = (uid) => {
                                 }
         
                         });
-    });
+      });
 }
 
 module.exports = {

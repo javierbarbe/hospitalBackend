@@ -1,7 +1,7 @@
 const { v4: uuidv4 } = require('uuid');
 const { response, request } = require("express");
 const { buscadorDentroArrayObjetos } = require("../helpers/buscadorArray");
-const { actualizarImagen } = require('../helpers/actualizar-imagen');
+const { actualizarImagen, borrarImagen } = require('../helpers/actualizar-imagen');
 const path = require('path');
 const fs  = require ('fs');
 
@@ -9,23 +9,23 @@ const fs  = require ('fs');
 
 const upload = async(req= request,res=response,next) =>{
     //#region EXPLICACION COMPARAR OBJETOS CON ELEMENTO ARRAY
-    const hombre = {
-        edad:22,
-        nombre:'javier',
-    }
-    const hombres = [{nombre:'javier',edad:22},{nombre:'Juana', edad:29}];
-    const seEncuentraEnArray = buscadorDentroArrayObjetos(hombres,hombre,'nombre');
+//     const hombre = {
+//         edad:22,
+//         nombre:'javier',
+//     }
+//     const hombres = [{nombre:'javier',edad:22},{nombre:'Juana', edad:29}];
+//     const seEncuentraEnArray = buscadorDentroArrayObjetos(hombres,hombre,'nombre');
     
-    console.log('se encuentra en el array??',seEncuentraEnArray);
-   // COMPARA OBJETOS IGUALES, Pero no un array contra un objeto
-    console.log( Object.entries(hombres[0]).sort().toString() === Object.entries(hombre).sort().toString());
+//     console.log('se encuentra en el array??',seEncuentraEnArray);
+//    // COMPARA OBJETOS IGUALES, Pero no un array contra un objeto
+//     console.log( Object.entries(hombres[0]).sort().toString() === Object.entries(hombre).sort().toString());
     //#endregion
     const {tipo, id} = req.params;
     const tiposValidos = ['medicos','hospitales','usuarios'];
     const resultado = tiposValidos.includes(tipo);
 
     // Validar la coleccion desde la url
-    if(!resultado){
+    if (!resultado){
       return  res.status(400).json({
             ok:false,
             msg:'No es un médico, usuario ni hospital'
@@ -57,10 +57,9 @@ const upload = async(req= request,res=response,next) =>{
 
     // Path para guardar la imagen
     const path = `./uploads/${tipo}/${nombreArchivo}`;
-
     
     // Actualizar la bbdd
-    const resultadoActualizacion = await actualizarImagen(nombreArchivo,tipo, id);
+    const resultadoActualizacion = await actualizarImagen(nombreArchivo, tipo, id);
 
     if(!resultadoActualizacion){
        return res.status(400).json({
@@ -75,7 +74,9 @@ const upload = async(req= request,res=response,next) =>{
             return res.status(500).json({
                 ok:false,
                 msg:'Error al mover la imagen'
-            });}
+            });
+        }
+        // LO QUE DEVOLVEMOS AL FRONT COMO JSON
         res.status(200).json({
             ok:true,
             msg:'FileUploaded',
@@ -97,4 +98,15 @@ const verImagenUploaded = (req, res=response) => {
     return res.sendFile( pathImg );
 }
 
-module.exports={upload,verImagenUploaded}
+const deleteImagen = (req = request, res = response) => {
+    console.log("Hemos llegado a delete imagen");
+    const { caminoViejo } = req.body;
+    console.log('el camino viejo', caminoViejo);
+    borrarImagen(caminoViejo);
+    res.status(200).json({
+        ok:true,
+        msg:'FileDeleted',
+    });
+}
+
+module.exports={ upload,verImagenUploaded, deleteImagen }

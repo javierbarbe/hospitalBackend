@@ -3,14 +3,16 @@
 */
 const { Router } = require('express');
 const {  check }  = require('express-validator');
-const { getMedicos, crearMedico, editaMedico, deleteMedico } = require('../controllers/medicos.controller');
+const { getMedicos, crearMedico, editaMedico, deleteMedico, getMedicoById } = require('../controllers/medicos.controller');
 
 const { validarCampos } = require('../middlewares/validar-campos');
 const { validarJWT } = require('../middlewares/validar-jwt');
 
 const router = Router();
 
-router.route('/')
+   router.get('/:id', [ validarJWT ] , getMedicoById)
+
+    router.route('/')
             .get( 
                 validarJWT, 
                 getMedicos);
@@ -26,15 +28,14 @@ router.route('/')
             ],
             crearMedico);
 
-router.route('/:id')
+    router.route('/:id')
+              
                 .put(
-                            [
-                               
-                            ],
-                            editaMedico
+                       validarJWT,
+                       editaMedico
                     )
                 .delete( 
-                    // validarJWT,
+                    validarJWT,
                      deleteMedico );
 
 

@@ -11,8 +11,9 @@ const validarJWT = (req = request, res = response, next) => {
       });
     }
     const { uid, ...resto } = jwt.verify(token, process.env.JWT_SECURE);
-    console.log('el resto',resto);
+    console.log('el resto',resto, 'la uid del usuario que esta logueado', uid);
     req.uid = uid;
+    console.log('la request al pasar por la primera validacion',req.uid)
     next();// hace que se llame a la siguiente función (se encadena)
   } catch (error) {
     return res.status(401).json({

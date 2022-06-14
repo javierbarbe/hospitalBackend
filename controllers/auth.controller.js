@@ -42,11 +42,13 @@ const login = async ( req=request, res=response, next )=> {
 
 const loginGoogle = async (req=request,res=response) => {
     try {
+        console.log('logingoogle')
         const tokenGoogle = req.body.token;
         const {name,email, picture} = await  googleVerify(tokenGoogle);
         console.log('====================================',{name,email,picture});
         const regex            = new RegExp(email, 'i');
         const usuarioDB = await Usuario.findOne({email});
+        console.log('logingoogle', usuarioDB);
         console.log('el usuarioDb es ',usuarioDB);
         console.log('********************************');
         let usuario;
@@ -63,8 +65,12 @@ const loginGoogle = async (req=request,res=response) => {
                 console.log('el usuario era null, ahroa es ',usuario);
         }else{
             //existe usuario
+            console.log('existe usuario', usuarioDB);
             usuario = usuarioDB;
             usuario.google=true;
+            if(usuario.noImage){
+                usuario.img = picture;
+            }
         }
          // Encriptacion contraseña
          const salt = bcrypt.genSaltSync();
@@ -92,6 +98,7 @@ const loginGoogle = async (req=request,res=response) => {
 const renewToken =async (req,res=response) => {
     // con el middleware validarJWT añadimos a la req el uid del usuario
     const uid = req.uid;
+    console.log("renovandotoken");
     const token = await generarJWT(uid);
     const usuario = await Usuario.findById(uid);
     // const {_doc} = usuario;
@@ -101,15 +108,7 @@ const renewToken =async (req,res=response) => {
         msg:'Renovando token',
         token,
         usuario
-        // final,
-        // usuario :{
-        //     _id: usuario._id,
-        //     nombre: usuario.nombre,
-        //     email: usuario.email,
-        //     role:usuario.role,
-        //     google:usuario.google,
-        //     img : usuario.img,
-        // }
+      
     })
 }
 module.exports = {

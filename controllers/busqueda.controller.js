@@ -38,10 +38,15 @@ const getDocumentosColeccion = async (req = request,res=response,next)=>{
         const tabla            = req.params.tabla;
         const regex            = new RegExp(palabrasBusqueda, 'i');
         let data;
+     console.log('intentando buscar...')
         switch (tabla) {
             case 'usuarios':
-                data = await Usuario.find({email:regex});
-                       
+                // buscando por nombre = regex o email = regex
+                data = await Usuario.find({ $or: 
+                                        [
+                                            {email: regex},
+                                            {nombre:regex} 
+                                        ]});
             break;
             case 'hospitales':
                 data = await Hospital.find({nombre:regex})

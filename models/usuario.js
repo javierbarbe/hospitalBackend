@@ -28,7 +28,8 @@ const { Schema, model} = require('mongoose');
     google:{
         type:Boolean,
         default:false
-    }
+    },
+    noImage :{type:Boolean}
  });
 usuarioSchema.method('toJSON', function(){
     // EXPLICACION !! EXTRACCION DE VALORES QUE NO QUIERO DEVOLVER

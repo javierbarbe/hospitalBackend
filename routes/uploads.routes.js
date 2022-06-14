@@ -3,7 +3,7 @@
 */
 const { Router } = require('express');
 const {  check }  = require('express-validator');
-const { upload, verImagenUploaded } = require('../controllers/uploads.controller');
+const { upload, verImagenUploaded, deleteImagen } = require('../controllers/uploads.controller');
 const fileUpload = require("express-fileupload");
 
 const { validarCampos } = require('../middlewares/validar-campos');
@@ -16,7 +16,7 @@ router.route('/:tipo/:id').put(  validarJWT, upload)
                          .get(  verImagenUploaded);
 
     
-
+router.route('/deleteImg/:id').post(validarJWT, deleteImagen);
 
 
 module.exports =  router ;

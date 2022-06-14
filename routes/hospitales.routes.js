@@ -20,7 +20,8 @@ router.route('/')
       router.post('/',
             [
                 validarJWT,
-                check('nombre','El nombre del Hospital es necesario').notEmpty(),
+               // check('nombre','El nombre del Hospital es necesario').notEmpty(),
+                check('hospital','El objeto Hospital es necesario').notEmpty(),
                 validarCampos
             ],
             crearHospital);
@@ -29,7 +30,8 @@ router.route('/:id')
                 .put(
                             [  
                                 validarJWT,
-                                check('nombre','El nombre del Hospital es necesario').notEmpty(),
+                                //check('nombre','El nombre del Hospital es necesario').notEmpty(),
+                                check('hospital','El  Hospital es necesario').notEmpty(),
                                 validarCampos
                             ],
                             editaHospital

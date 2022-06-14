@@ -27,11 +27,12 @@ const { Schema, model} = require('mongoose');
         // }
     );
     medicoSchema.method('toJSON', function(){
-    const {__v, ...object}=this.toObject();
-
-    
-    return object;
-})
+        const {__v, _id,...object}=this.toObject();
+        object.uid = _id;
+        
+        return object;
+    }
+)
 
 const user = model('Medico',medicoSchema);
 

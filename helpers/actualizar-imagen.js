@@ -10,20 +10,24 @@ const borrarImagen = (pathViejo) => {
         // O sea que ese medico,hospital o usuario tengan ya foto
         // si lo hay... con unlinkSyn la elimino (sea cual sea)
 //#endregion
+    try{
         if(fs.existsSync(pathViejo)){
             fs.unlinkSync(pathViejo);
+            return true;
         }
+    }catch (error){
+        return false;
+    }
 }
 
- const actualizarImagen= async(nombreArchivo,coleccion, id) =>{
+ const actualizarImagen = async(nombreArchivo,coleccion, id) =>{
      try {
-         
          let data ;
          console.log('la coleccion',coleccion);
-         debugger;
          switch (coleccion) {
              case 'usuarios':
                  data = await Usuario.findById(id);
+                 data.noImage = false;
              break;       
              case 'medicos':
                  console.log('entro en medicos');
@@ -39,12 +43,11 @@ const borrarImagen = (pathViejo) => {
         borrarImagen(pathViejo);
         // reajusto la propiedad imagen en la bbdd
         data.img = nombreArchivo;
-
         //#region EXPLICACION
         // uso esto "data.save()" en lugar del Medico.create(medico), ya que necesitaría repetir codigo en cada switch
         //#endregion
         const resultadoGrabar = await data.save();
-        console.log(resultadoGrabar);
+        console.log('el resultado de cambiar img',resultadoGrabar);
         return true;
     } catch (error) {
         console.log('el error',error);
@@ -55,4 +58,4 @@ const borrarImagen = (pathViejo) => {
 }
 
 
-module.exports={actualizarImagen}
+module.exports={actualizarImagen, borrarImagen}
