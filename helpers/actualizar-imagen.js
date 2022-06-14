@@ -24,7 +24,6 @@ const borrarImagen = (pathViejo) => {
      try {
          let data ;
          console.log('la coleccion',coleccion);
-         debugger;
          switch (coleccion) {
              case 'usuarios':
                  data = await Usuario.findById(id);
@@ -48,7 +47,7 @@ const borrarImagen = (pathViejo) => {
         // uso esto "data.save()" en lugar del Medico.create(medico), ya que necesitaría repetir codigo en cada switch
         //#endregion
         const resultadoGrabar = await data.save();
-        console.log(resultadoGrabar);
+        console.log('el resultado de cambiar img',resultadoGrabar);
         return true;
     } catch (error) {
         console.log('el error',error);

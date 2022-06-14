@@ -137,7 +137,7 @@ const getMedicoById = async (req = request, res = response)=> {
 
 const deleteMedico = async (req=request, res = response)=> {
     try {
-       
+       //eo
         const idMedico = req.params.id;
         const uid      = req.uid;
         const MedicoEliminar = await Medico.findByIdAndDelete(idMedico);
