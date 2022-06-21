@@ -87,7 +87,6 @@ const loginGoogle = async (req=request,res=response) => {
                 msg:'verificado token goole',
                 token,
                 usuario,
-
                 menu: getMenuFrontEnd(usuario.role)
             });
     } catch (error) {
