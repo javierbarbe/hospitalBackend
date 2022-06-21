@@ -3,6 +3,7 @@ const Usuario = require ('../models/usuario')
 const bcrypt = require('bcryptjs');
 const { generarJWT } = require("../helpers/jwt");
 const { googleVerify } = require("../helpers/google-verify");
+const { getMenuFrontEnd } = require("../helpers/menu-frontend");
 
 
 const login = async ( req=request, res=response, next )=> {
@@ -28,7 +29,8 @@ const login = async ( req=request, res=response, next )=> {
         const token = await generarJWT(usuarioDB._id)
         res.json({
             ok:true,
-            token
+            token,
+            menu: getMenuFrontEnd(usuarioDB.role)
         })
 
     } catch (error) {
@@ -84,7 +86,9 @@ const loginGoogle = async (req=request,res=response) => {
                 ok:true,
                 msg:'verificado token goole',
                 token,
-                usuario
+                usuario,
+
+                menu: getMenuFrontEnd(usuario.role)
             });
     } catch (error) {
         res.status(400).json({
@@ -107,8 +111,8 @@ const renewToken =async (req,res=response) => {
         ok:true,
         msg:'Renovando token',
         token,
-        usuario
-      
+        usuario,
+        menu: getMenuFrontEnd(usuario.role)
     })
 }
 module.exports = {

@@ -1,5 +1,6 @@
 const { response, request } = require("express");
 const jwt = require("jsonwebtoken");
+const Usuario = require('../models/usuario')
 
 const validarJWT = (req = request, res = response, next) => {
   try {
@@ -23,6 +24,50 @@ const validarJWT = (req = request, res = response, next) => {
   }
 };
 
+const validarADMIN_ROLE = async (req=request,res=response,next) => {
+  const idUserLogueado = req.uid;
+  const usuarioEditante = await Usuario.findById(idUserLogueado);
+  if (!usuarioEditante) {
+    return res.status(404).json({
+      ok:false,
+      msg:'Usuario no encontrado'
+    })
+  }
+  if (usuarioEditante.role !== 'ADMIN_ROLE'){
+    return res.status(500).json({
+      ok:false,
+      msg:"No tiene permisos para realizar esta acción",
+      usuario:usuarioEditante
+    })
+  }
+  next();
+}
+
+const validarADMIN_ROLE_o_MismoUsuario = async (req=request,res=response,next) => {
+  const idUserLogueado = req.uid;
+  const idUsuarioAModificar = req.params.id;
+ console.log(idUserLogueado)
+ console.log(idUsuarioAModificar)
+  const usuarioEditante = await Usuario.findById(idUserLogueado);
+  if (!usuarioEditante) {
+    return res.status(404).json({
+      ok:false,
+      msg:'Usuario no encontrado'
+    })
+  }
+  if (usuarioEditante.role === 'ADMIN_ROLE' ||  idUserLogueado === idUsuarioAModificar){
+      next();
+  }else {
+    return res.status(500).json({
+      ok:false,
+      msg:"No tiene permisos para realizar esta acción",
+      usuario:usuarioEditante
+    })
+  }
+}
+
 module.exports = {
   validarJWT,
+  validarADMIN_ROLE,
+  validarADMIN_ROLE_o_MismoUsuario
 };

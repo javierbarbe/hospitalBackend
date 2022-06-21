@@ -3,6 +3,7 @@ const { request, response } = require('express');
 const Usuario = require ('../models/usuario');
 const bcrypt = require('bcryptjs');
 const { generarJWT } = require('../helpers/jwt');
+const { getMenuFrontEnd } = require('../helpers/menu-frontend');
 const getUsuarios = async (req = request,res,next)=>{
   try{  
       // Recogo de la query los parametros (desde y hasta o límite )
@@ -92,20 +93,39 @@ const editaUsuario = async (req=request,res=response)=>{
             msg: "No hay rol de usuario",
           });
         }
-        const usuarioBBDD = await Usuario.findById(idUsuario);
+       // const usuarioEDITOR = await Usuario.findById(idUsuario);
+        const usuarioEditado= await Usuario.findById(idUsuario);
         // si el usuario no existe
-        if (!usuarioBBDD){
+        if (!usuarioEditado){
            return res.status(400).json({
                 ok:false,
                 msg:'El usuario con id'+ idUsuario+' no existe',
                 usuario: undefined
             });
         }
+        console.log('el usuario que quiero editar',usuarioEditado)
+        // si el email es de google no cambio de email
+        if (!usuarioEditado.google ){
+            // añado a los campos el mail    
+            campos.email = email;
+        } 
+        else  { 
+            // si es un email de google y son distintos
+            if(email !== usuarioEditado.email){
+                return  res.status(400).json({
+                    ok:false,
+                    msg: `Los usuarios de google no pueden cambiar su email`,
+                    usuario: usuarioEditado,
+                    email : usuarioEditado.email
+                })
+            }
+        }
+
         // si los mails son distintos, compruebo que no haya nadie en la bbdd con ese email
-        if ( usuarioBBDD.email != email ){
-            const existeMail= await Usuario.findOne({email});
+        if (usuarioEditado.email != email ){
+            const otroUserMismoMail = await Usuario.findOne({email});
             // si ya hay un usuario con ese email, error
-            if(existeMail){
+            if (otroUserMismoMail){
                 return res.status(400).json({
                     ok:false,
                     msg: 'Ya existe un usuario con ese email',
@@ -113,18 +133,7 @@ const editaUsuario = async (req=request,res=response)=>{
                 })
             }
         }
-          // si el email es de google no permito el cambio de email
-          if ( !usuarioBBDD.google ){
-              // añado a los campos el mail    
-              campos.email = email;
-          } 
-          else if (usuarioBBDD.email !== email){
-            return  res.status(400).json({
-                ok:false,
-                msg: `Los usuarios de google no pueden cambiar su email `,
-                usuario: undefined
-            })
-          }
+    
         const usuarioActualizado = await Usuario.findByIdAndUpdate(idUsuario, campos,{new:true});
         console.log("el usuariotras actualizar",usuarioActualizado);
             // esta opcion de new true,
@@ -133,7 +142,8 @@ const editaUsuario = async (req=request,res=response)=>{
         return  res.status(200).json({
             ok:true,
             usuario:usuarioActualizado,
-            msg:"Todo ok JoseLuis"
+            msg:"Todo ok JoseLuis",
+            menu : getMenuFrontEnd(usuarioActualizado.role)
         })
         
     } catch (error) {
